@@ -5,7 +5,14 @@
         Add New
       </button>
     </div>
-
+    <div v-for="danceClass in classes" :key="danceClass.id" class="class-card">
+      <h2>{{ danceClass.title }}</h2>
+      <p>{{ danceClass.level }}</p>
+      <p>{{ danceClass.startTime }}</p>
+      <p>{{ danceClass.endTime }}</p>
+      <p>{{ danceClass.days }}</p>
+      <p>{{ danceClass.note }}</p>
+    </div>
     <ClassFormModal
       v-if="showForm"
       @close="closeForm"
@@ -15,13 +22,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import ClassFormModal from '../components/ClassFormModal.vue'
+import { add, getAll } from '../api/classApi'
 
 const showForm = ref(false)
+const classes = ref([])
+
+onMounted(async () => {
+  const classesData = await getAll()
+  if (classesData && classesData.length > 0) {
+    classes.value = classesData
+  }
+})
 
 const saveClass = (newClass) => {
-  console.log('saveClass', newClass)
+  add(newClass)
   showForm.value = false
 }
 
@@ -50,5 +66,12 @@ const closeForm = () => {
 
 .add-btn:hover {
   background-color: #16a34a;
+}
+
+.class-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 </style>
